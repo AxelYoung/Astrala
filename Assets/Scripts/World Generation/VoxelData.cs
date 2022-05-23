@@ -17,6 +17,8 @@ public static class VoxelData {
     public static readonly Vector2 worldSize = new Vector2(chunkWidth * worldChunkSize, chunkDepth * worldChunkSize);
     public static readonly int chunkHeight = 64;
 
+    public static readonly Vector2 spriteSheetSize = new Vector2(Voxels.voxelAmount, 3);
+
 
     public static Vector2[] hexVerticies = new Vector2[] {
         new Vector2(0.5373f, 0),
@@ -77,4 +79,35 @@ public static class VoxelData {
         0, 2, 3
     };
 
+    public static Vector3[] relativeVoxelVerticies(Vector3 center) {
+        Vector3[] verticies = new Vector3[6];
+        for (int i = 0; i < 6; i++) {
+            verticies[i] = new Vector3(hexVerticies[i].x + center.x, center.y, hexVerticies[i].y + center.z);
+        }
+        return verticies;
+    }
+
+    public static int[] relativeVoxelTriangles(bool top, int meshVertCount) {
+        int[] triangles = new int[VoxelData.topHexagonalFace.Length];
+        for (int i = 0; i < triangles.Length; i++) {
+            triangles[i] = (meshVertCount - 6) + (top ? topHexagonalFace[i] : bottomHexagonalFace[i]);
+        }
+        return triangles;
+    }
+
+    public static Vector2[] faceUVsFromIndex(Vector2 index, Vector2 sheetSize) {
+        Vector2[] uvs = new Vector2[6];
+        for (int i = 0; i < 6; i++) {
+            uvs[i] = new Vector2(((hexUVs[i].x + 0.5f + index.x) / sheetSize.x), ((hexUVs[i].y + 0.5f + index.y) / sheetSize.y));
+        }
+        return uvs;
+    }
+
+    public static Vector2[] sideUVsFromIndex(Vector2 index, Vector2 sheetSize) {
+        Vector2[] uvs = new Vector2[4];
+        for (int i = 0; i < 4; i++) {
+            uvs[i] = new Vector2(((hexSideUVs[i].x + 0.5f + index.x) / sheetSize.x), ((hexSideUVs[i].y + index.y) / sheetSize.y));
+        }
+        return uvs;
+    }
 }

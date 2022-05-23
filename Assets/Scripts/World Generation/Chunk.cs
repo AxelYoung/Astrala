@@ -90,26 +90,26 @@ public class Chunk {
         Vector3 worldCoordinates = coordinates.worldPosition;
         if (!Voxels.types[voxelType].isFoliage) {
             // Bottom face
-            Vector3[] bottomVerticies = relativeVoxelVerticies(worldCoordinates);
+            Vector3[] bottomVerticies = VoxelData.relativeVoxelVerticies(worldCoordinates);
             if (transparentVoxelAtPosition(coordinates.bottomNeighbor)) {
                 meshVerticies.AddRange(bottomVerticies);
                 if (!transparent) {
-                    mainMeshTriangles.AddRange(relativeVoxelTriangles(false));
+                    mainMeshTriangles.AddRange(VoxelData.relativeVoxelTriangles(false, meshVerticies.Count));
                 } else {
-                    transparentMeshTriangles.AddRange(relativeVoxelTriangles(false));
+                    transparentMeshTriangles.AddRange(VoxelData.relativeVoxelTriangles(false, meshVerticies.Count));
                 }
-                meshUVs.AddRange(faceUVsFromIndex(new Vector2(voxelType - 1, 0)));
+                meshUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(voxelType - 1, 0), VoxelData.spriteSheetSize));
             }
             // Top face
-            Vector3[] topVerticies = relativeVoxelVerticies(worldCoordinates + Vector3.up);
+            Vector3[] topVerticies = VoxelData.relativeVoxelVerticies(worldCoordinates + Vector3.up);
             if (transparentVoxelAtPosition(coordinates.topNeighbor)) {
                 meshVerticies.AddRange(topVerticies);
                 if (!transparent) {
-                    mainMeshTriangles.AddRange(relativeVoxelTriangles(true));
+                    mainMeshTriangles.AddRange(VoxelData.relativeVoxelTriangles(true, meshVerticies.Count));
                 } else {
-                    transparentMeshTriangles.AddRange(relativeVoxelTriangles(true));
+                    transparentMeshTriangles.AddRange(VoxelData.relativeVoxelTriangles(true, meshVerticies.Count));
                 }
-                meshUVs.AddRange(faceUVsFromIndex(new Vector2(voxelType - 1, 2)));
+                meshUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(voxelType - 1, 2), VoxelData.spriteSheetSize));
             }
             // Sides
             for (int i = 0; i < 6; i++) {
@@ -131,7 +131,7 @@ public class Chunk {
                         }
 
                     }
-                    meshUVs.AddRange(sideUVsFromIndex(new Vector2(voxelType - 1, 1)));
+                    meshUVs.AddRange(VoxelData.sideUVsFromIndex(new Vector2(voxelType - 1, 1), VoxelData.spriteSheetSize));
                 }
             }
         } else {
@@ -270,38 +270,6 @@ public class Chunk {
         foliage.RecalculateNormals();
         foliageMeshFilter.mesh = foliage;
         foliageMeshCollider.sharedMesh = foliage;
-    }
-
-    Vector3[] relativeVoxelVerticies(Vector3 center) {
-        Vector3[] verticies = new Vector3[6];
-        for (int i = 0; i < 6; i++) {
-            verticies[i] = new Vector3(VoxelData.hexVerticies[i].x + center.x, center.y, VoxelData.hexVerticies[i].y + center.z);
-        }
-        return verticies;
-    }
-
-    int[] relativeVoxelTriangles(bool top) {
-        int[] triangles = new int[VoxelData.topHexagonalFace.Length];
-        for (int i = 0; i < triangles.Length; i++) {
-            triangles[i] = (meshVerticies.Count - 6) + (top ? VoxelData.topHexagonalFace[i] : VoxelData.bottomHexagonalFace[i]);
-        }
-        return triangles;
-    }
-
-    Vector2[] faceUVsFromIndex(Vector2 index) {
-        Vector2[] uvs = new Vector2[6];
-        for (int i = 0; i < 6; i++) {
-            uvs[i] = new Vector2(((VoxelData.hexUVs[i].x + 0.5f + index.x) / Voxels.voxelAmount), ((VoxelData.hexUVs[i].y + 0.5f + index.y) / 3f));
-        }
-        return uvs;
-    }
-
-    Vector2[] sideUVsFromIndex(Vector2 index) {
-        Vector2[] uvs = new Vector2[4];
-        for (int i = 0; i < 4; i++) {
-            uvs[i] = new Vector2(((VoxelData.hexSideUVs[i].x + 0.5f + index.x) / Voxels.voxelAmount), ((VoxelData.hexSideUVs[i].y + index.y) / 3f));
-        }
-        return uvs;
     }
 
     Vector2[] foliageUVsFromIndex(float voxelType) {

@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.InputSystem;
 
 public class PlayerInventory : MonoBehaviour {
 
@@ -12,25 +13,25 @@ public class PlayerInventory : MonoBehaviour {
     [HideInInspector] public int currentItem;
     public RawImage selectedItemImage;
 
-    [Header("Controls")]
-    [SerializeField] KeyCode inventoryKey = KeyCode.E;
-
     [HideInInspector] public bool inventoryOpen = false;
 
-    PlayerController player;
+    Player player;
+    PlayerHand hand;
+    PlayerMovementHandler movementHandler;
 
-    void Awake() {
-        player = GetComponent<PlayerController>();
+    void Start() {
+        player = GetComponent<Player>();
+        hand = player.GetPlayerBehaviour<PlayerHand>();
+        movementHandler = player.GetPlayerBehaviour<PlayerMovementHandler>();
+        player.input.actions["Inventory"].performed += (InputAction.CallbackContext context) => { ToggleInventory(); };
+        player.input.actions["HotbarSelect"].performed += (InputAction.CallbackContext context) => { InventorySelect(context.ReadValue<float>()); };
+        selectedItemImage.transform.position = hotbarSlots[currentItem].rectTransform.position;
     }
 
-    void Update() {
-        if (!player.craftingOpen) {
-            ToggleInventory();
-        }
-
-        if (Input.GetAxisRaw("Mouse ScrollWheel") != 0) {
-            if (Input.GetAxisRaw("Mouse ScrollWheel") > 0) currentItem--;
-            if (Input.GetAxisRaw("Mouse ScrollWheel") < 0) currentItem++;
+    void InventorySelect(float scroll) {
+        if (scroll != 0) {
+            if (scroll > 0) currentItem--;
+            if (scroll < 0) currentItem++;
 
             if (currentItem < 0) {
                 currentItem = 6;
@@ -38,19 +39,16 @@ public class PlayerInventory : MonoBehaviour {
             if (currentItem > 6) {
                 currentItem = 0;
             }
-            player.UpdateArm();
+            hand.UpdateArm();
+            selectedItemImage.transform.position = hotbarSlots[currentItem].rectTransform.position;
         }
-
-        selectedItemImage.transform.position = hotbarSlots[currentItem].rectTransform.position;
     }
 
     void ToggleInventory() {
-        if (Input.GetKeyDown(inventoryKey)) {
-            inventoryOpen = !inventoryOpen;
-            Cursor.lockState = inventoryOpen ? CursorLockMode.None : CursorLockMode.Locked;
-            inventoryObject.SetActive(inventoryOpen);
-            player.moveDir = new Vector3(0, player.moveDir.y, 0);
-        }
+        inventoryOpen = !inventoryOpen;
+        Cursor.lockState = inventoryOpen ? CursorLockMode.None : CursorLockMode.Locked;
+        inventoryObject.SetActive(inventoryOpen);
+        movementHandler.moveDir = new Vector3(0, movementHandler.moveDir.y, 0);
     }
 
     public int PickUpItem(byte ID, byte amount) {
@@ -94,7 +92,7 @@ public class PlayerInventory : MonoBehaviour {
                 hotbarSlots[index].gameObject.SetActive(false);
             }
             if (index == currentItem) {
-                player.UpdateArm();
+                hand.UpdateArm();
             }
         }
     }
