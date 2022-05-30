@@ -29,8 +29,6 @@ public class PlayerDashMovement : PlayerMovementModifier {
 
         Vector2 input = player.input.actions["Move"].ReadValue<Vector2>();
 
-        //smoothMove = 0f;
-
         if (input != Vector2.zero) {
             Vector3 dashDir = (transform.right * input.x + transform.forward * input.y) * dashSpeed;
 
@@ -45,8 +43,6 @@ public class PlayerDashMovement : PlayerMovementModifier {
             dashParticleVel.z = -input.y * 3;
             dashParticle.Emit(100);
         }
-
-        //smoothMove = smoothMoveDefault;
 
         moveDir = Vector3.zero;
         player.dashing = false;

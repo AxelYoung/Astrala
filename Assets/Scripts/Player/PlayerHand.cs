@@ -68,7 +68,7 @@ public class PlayerHand : PlayerBehaviour {
 
     PlayerCamera camera;
 
-    Vector2 cursorSheetSize = new Vector2(9, 2);
+    Vector2 cursorSheetSize = new Vector2(16, 1);
 
     void Start() {
         inventory = GetComponent<PlayerInventory>();
@@ -153,10 +153,10 @@ public class PlayerHand : PlayerBehaviour {
 
     public void UpdateArmUVs(byte ID) {
         armUVs.Clear();
-        armUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(ID - 1, 0), VoxelData.spriteSheetSize));
-        armUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(ID - 1, 2), VoxelData.spriteSheetSize));
-        for (int i = 0; i < 6; i++) {
-            armUVs.AddRange(VoxelData.sideUVsFromIndex(new Vector2(ID - 1, 1), VoxelData.spriteSheetSize));
+        armUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(ID - 1, 0), VoxelData.spriteSheetSize));
+        armUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(ID - 1, 2), VoxelData.spriteSheetSize));
+        for (int i = 0; i < 4; i++) {
+            armUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(ID - 1, 1), VoxelData.spriteSheetSize));
         }
         armMesh.uv = armUVs.ToArray();
         armMesh.RecalculateNormals();
@@ -177,10 +177,10 @@ public class PlayerHand : PlayerBehaviour {
         voxelCollider.sharedMesh = voxelMesh;
         voxelCollider.convex = true;
         Rigidbody rb = voxel.AddComponent<Rigidbody>();
-        voxelUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(voxelType - 1, 0), VoxelData.spriteSheetSize));
-        voxelUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(voxelType - 1, 2), VoxelData.spriteSheetSize));
-        for (int i = 0; i < 6; i++) {
-            voxelUVs.AddRange(VoxelData.sideUVsFromIndex(new Vector2(voxelType - 1, 1), VoxelData.spriteSheetSize));
+        voxelUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(voxelType - 1, 0), VoxelData.spriteSheetSize));
+        voxelUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(voxelType - 1, 2), VoxelData.spriteSheetSize));
+        for (int i = 0; i < 4; i++) {
+            voxelUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(voxelType - 1, 1), VoxelData.spriteSheetSize));
         }
         voxelMesh.uv = voxelUVs.ToArray();
         voxelMesh.RecalculateNormals();
@@ -218,15 +218,16 @@ public class PlayerHand : PlayerBehaviour {
         meshVerticies.AddRange(topVerticies);
         meshTriangles.AddRange(VoxelData.relativeVoxelTriangles(true, meshVerticies.Count));
         // Sides
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 4; i++) {
             int[] sideVerticies = new int[4];
-            meshVerticies.Add(bottomVerticies[i]);
+            int side = VoxelData.hexSideOrder[i];
+            meshVerticies.Add(bottomVerticies[side]);
             sideVerticies[0] = meshVerticies.Count - 1;
-            meshVerticies.Add(bottomVerticies[i + 1 < 6 ? i + 1 : 0]);
+            meshVerticies.Add(bottomVerticies[i + 1 < 4 ? VoxelData.hexSideOrder[i + 1] : 0]);
             sideVerticies[1] = meshVerticies.Count - 1;
-            meshVerticies.Add(topVerticies[i]);
+            meshVerticies.Add(topVerticies[side]);
             sideVerticies[2] = meshVerticies.Count - 1;
-            meshVerticies.Add(topVerticies[i + 1 < 6 ? i + 1 : 0]);
+            meshVerticies.Add(topVerticies[i + 1 < 4 ? VoxelData.hexSideOrder[i + 1] : 0]);
             sideVerticies[3] = meshVerticies.Count - 1;
             foreach (int triangle in VoxelData.sideTriangles) {
                 meshTriangles.Add(sideVerticies[triangle]);
@@ -236,10 +237,10 @@ public class PlayerHand : PlayerBehaviour {
 
     void UpdateCursorUVs(int state) {
         meshUVs.Clear();
-        meshUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(state, 1), cursorSheetSize));
-        meshUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(state, 1), cursorSheetSize));
-        for (int i = 0; i < 6; i++) {
-            meshUVs.AddRange(VoxelData.sideUVsFromIndex(new Vector2(state, 0), cursorSheetSize));
+        meshUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(state, 0), cursorSheetSize));
+        meshUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(state, 0), cursorSheetSize));
+        for (int i = 0; i < 4; i++) {
+            meshUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(state, 0), cursorSheetSize));
         }
         cursorMesh.uv = meshUVs.ToArray();
         cursorMeshFilter.mesh = cursorMesh;

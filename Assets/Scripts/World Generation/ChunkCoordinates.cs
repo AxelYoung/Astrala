@@ -15,8 +15,8 @@ public class ChunkCoordinates {
     }
 
     public ChunkCoordinates(Vector3 worldCoordinates) {
-        x = Mathf.FloorToInt(worldCoordinates.x / VoxelData.chunkWidth);
-        z = Mathf.FloorToInt(worldCoordinates.z / VoxelData.chunkDepth);
+        x = Mathf.FloorToInt(worldCoordinates.x / VoxelData.chunkSize);
+        z = Mathf.FloorToInt(worldCoordinates.z / VoxelData.chunkSize);
     }
 
     public ChunkCoordinates(Coordinates coordinates) {

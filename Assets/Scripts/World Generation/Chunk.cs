@@ -50,7 +50,7 @@ public class Chunk {
         meshRenderer.materials = new Material[] { worldGeneration.worldMaterial, worldGeneration.worldMaterialTransparent };
 
         gameObject.transform.parent = worldGeneration.transform;
-        Vector2 chunkCoordWorldPosition = new Vector2(chunkCoordinates.x * VoxelData.chunkWidth, chunkCoordinates.z * VoxelData.chunkDepth);
+        Vector2 chunkCoordWorldPosition = new Vector2(chunkCoordinates.x * VoxelData.chunkSize, chunkCoordinates.z * VoxelData.chunkSize);
         gameObject.transform.position = new Vector3(chunkCoordWorldPosition.x, 0, chunkCoordWorldPosition.y);
         gameObject.transform.name = "Chunk (" + chunkCoordinates.x + ", " + chunkCoordinates.z + ")";
 
@@ -62,7 +62,7 @@ public class Chunk {
         foliageMeshRenderer.material = worldGeneration.worldMaterialTransparent;
 
         foliageGameObject.transform.parent = worldGeneration.transform;
-        Vector2 foliageChunkCoordWorldPosition = new Vector2(chunkCoordinates.x * VoxelData.chunkWidth, chunkCoordinates.z * VoxelData.chunkDepth);
+        Vector2 foliageChunkCoordWorldPosition = new Vector2(chunkCoordinates.x * VoxelData.chunkSize, chunkCoordinates.z * VoxelData.chunkSize);
         foliageGameObject.transform.position = new Vector3(foliageChunkCoordWorldPosition.x, 0, foliageChunkCoordWorldPosition.y);
         foliageGameObject.transform.name = "Foliage Chunk (" + chunkCoordinates.x + ", " + chunkCoordinates.z + ")";
 
@@ -98,7 +98,7 @@ public class Chunk {
                 } else {
                     transparentMeshTriangles.AddRange(VoxelData.relativeVoxelTriangles(false, meshVerticies.Count));
                 }
-                meshUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(voxelType - 1, 0), VoxelData.spriteSheetSize));
+                meshUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(voxelType - 1, 0), VoxelData.spriteSheetSize));
             }
             // Top face
             Vector3[] topVerticies = VoxelData.relativeVoxelVerticies(worldCoordinates + Vector3.up);
@@ -109,19 +109,20 @@ public class Chunk {
                 } else {
                     transparentMeshTriangles.AddRange(VoxelData.relativeVoxelTriangles(true, meshVerticies.Count));
                 }
-                meshUVs.AddRange(VoxelData.faceUVsFromIndex(new Vector2(voxelType - 1, 2), VoxelData.spriteSheetSize));
+                meshUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(voxelType - 1, 2), VoxelData.spriteSheetSize));
             }
             // Sides
-            for (int i = 0; i < 6; i++) {
+            for (int i = 0; i < 4; i++) {
                 if (transparentVoxelAtPosition(coordinates.sideNeighbors[i])) {
                     int[] sideVerticies = new int[4];
-                    meshVerticies.Add(bottomVerticies[i]);
+                    int side = VoxelData.hexSideOrder[i];
+                    meshVerticies.Add(bottomVerticies[side]);
                     sideVerticies[0] = meshVerticies.Count - 1;
-                    meshVerticies.Add(bottomVerticies[i + 1 < 6 ? i + 1 : 0]);
+                    meshVerticies.Add(bottomVerticies[i + 1 < 4 ? VoxelData.hexSideOrder[i + 1] : 0]);
                     sideVerticies[1] = meshVerticies.Count - 1;
-                    meshVerticies.Add(topVerticies[i]);
+                    meshVerticies.Add(topVerticies[side]);
                     sideVerticies[2] = meshVerticies.Count - 1;
-                    meshVerticies.Add(topVerticies[i + 1 < 6 ? i + 1 : 0]);
+                    meshVerticies.Add(topVerticies[i + 1 < 4 ? VoxelData.hexSideOrder[i + 1] : 0]);
                     sideVerticies[3] = meshVerticies.Count - 1;
                     foreach (int triangle in VoxelData.sideTriangles) {
                         if (!transparent) {
@@ -131,7 +132,7 @@ public class Chunk {
                         }
 
                     }
-                    meshUVs.AddRange(VoxelData.sideUVsFromIndex(new Vector2(voxelType - 1, 1), VoxelData.spriteSheetSize));
+                    meshUVs.AddRange(VoxelData.uvsFromIndex(new Vector2(voxelType - 1, 1), VoxelData.spriteSheetSize));
                 }
             }
         } else {
@@ -214,7 +215,7 @@ public class Chunk {
     }
 
     void UpdateSurroundingVoxels(Coordinates coordinates) {
-        for (int i = 0; i < 6; i++) {
+        for (int i = 0; i < 4; i++) {
             if (!voxelInChunk(coordinates.sideNeighbors[i])) {
                 Coordinates globalOffset = Coordinates.LocalToGlobalOffset(coordinates.sideNeighbors[i], chunkCoordinates); ;
                 if (!worldGeneration.voxelInWorld(globalOffset)) return;

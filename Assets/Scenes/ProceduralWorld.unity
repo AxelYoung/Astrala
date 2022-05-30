@@ -29478,8 +29478,6 @@ GameObject:
   - component: {fileID: 3706048713606524572}
   - component: {fileID: 3706048713606524570}
   - component: {fileID: 3706048713606524569}
-  - component: {fileID: 3706048713606524568}
-  - component: {fileID: 3706048713606524567}
   - component: {fileID: 3706048713606524573}
   - component: {fileID: 3706048713606524576}
   - component: {fileID: 3706048713606524577}
@@ -29514,7 +29512,6 @@ MonoBehaviour:
   - {fileID: 1620498008881143286}
   currentItem: 0
   selectedItemImage: {fileID: 1620498007043588269}
-  inventoryKey: 101
   inventoryOpen: 0
 --- !u!143 &3706048713606524566
 CharacterController:
@@ -29534,39 +29531,6 @@ CharacterController:
   m_SkinWidth: 0.05
   m_MinMoveDistance: 0
   m_Center: {x: 0, y: 0, z: 0}
---- !u!114 &3706048713606524567
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3706048713606524563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 99d922beee9271e40b37d90cdcfb1440, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  moveDir: {x: 0, y: 0, z: 0}
-  dashSpeed: 75
-  dashLength: 0.1
-  dashParticle: {fileID: 3706048712990084090}
---- !u!114 &3706048713606524568
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3706048713606524563}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 83d79a40a4790a8438a310b27f63a326, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  player: {fileID: 0}
-  moveDir: {x: 0, y: 0, z: 0}
-  slideSpeed: 10
-  slideLength: 0.5
 --- !u!114 &3706048713606524569
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -29647,6 +29611,7 @@ MonoBehaviour:
   player: {fileID: 0}
   crouchingHeightMulitplier: 0.5
   crouchAnimLength: 0.25
+  crouchAnimPlaying: 0
   standingHeight: 0
   standingCenter: {x: 0, y: 0, z: 0}
 --- !u!114 &3706048713606524574
